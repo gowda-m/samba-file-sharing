@@ -1,9 +1,7 @@
 Samba File Sharing Between Linux and Windows
 Project Overview
 
-This project demonstrates the configuration of Samba file sharing on a Linux server and access from a Windows client. It covers Samba installation, user authentication, Linux ACL permissions, SELinux security contexts, share configuration, and file-access validation.
-
-The project is based on a practical lab environment using Linux command-line tools and Windows File Explorer.
+This project demonstrates how to configure Samba file sharing on a Linux server and access shared directories from a Windows client. It covers Samba installation, user authentication, ACL permissions, SELinux security contexts, share configuration, and file-access validation.
 
 Technologies Used
 Linux Server (RHEL-based distribution)
@@ -14,21 +12,16 @@ SELinux
 Linux user and permission management
 Network file sharing
 
-
-1. Install Samba
+1. Samba Installation
 
 Install the Samba server and client packages.
 
 dnf install samba samba-client samba-common -y
+![Samba installation](Image/01-samba-installation.png)
 
+2. Linux User Creation
 
-Screenshot:
-
-!Samba installation
-
-2. Create a Linux User
-
-Create a dedicated account for Samba access.
+Create a dedicated Linux user for Samba access.
 
 useradd -s /sbin/nologin user1
 passwd user1
@@ -36,83 +29,74 @@ smbpasswd -a user1
 smbpasswd -e user1
 
 useradd creates the Linux account.
-/sbin/nologin prevents normal interactive shell login.
 passwd sets the Linux account password.
-smbpasswd -a adds the account to Samba's password database.
+smbpasswd -a adds the user to the Samba password database.
 smbpasswd -e enables the Samba account.
 
-Screenshot:
+![Linux user creation](Image/02-linux-user-creation.png)
 
-!Linux user creation
+3. ACL Package Installation
 
-3. Install ACL Utilities
-
-Install the ACL package to manage additional file and directory permissions.
+Install ACL utilities to manage file and directory permissions.
 
 dnf install acl -y
 
 
-Screenshot:
+![ACL package installation](Image/03-acl-package-installation.png)
 
-!ACL package installation
+4. SELinux Context Configuration
 
-4. Configure SELinux
-
-Assign the Samba share SELinux type to the shared directory.
+Install the SELinux management utilities.
 
 dnf install policycoreutils-python-utils -y
 
-semanage fcontext -a -t samba_share_t "/opt/shared_folder(/.*)?"
 
+Add the SELinux file context rule and apply it to the shared directory.
+
+semanage fcontext -a -t samba_share_t "/opt/shared_folder(/.*)?"
 restorecon -Rv /opt/shared_folder
 
 
-Verify the security context:
+Verify the SELinux context.
 
 ls -Zd /opt/shared_folder
 
 
-The directory should have the samba_share_t type.
+The directory should have the samba_share_t SELinux type.
 
-Screenshot:
+![SELinux context](Image/04-selinux-context.png)
 
-!SELinux context configuration
+5. Folder ACL Permissions
 
-5. Configure Directory ACL Permissions
-
-Create the shared directory:
+Create the shared directory if it does not already exist.
 
 mkdir -p /opt/shared_folder
 
 
-Grant user1 read, write, and directory traversal permissions:
+Grant user1 read, write, and directory traversal permissions.
 
 setfacl -m u:user1:rwx /opt/shared_folder
-
 setfacl -R -m u:user1:rwX /opt/shared_folder
-
 setfacl -m d:u:user1:rwX /opt/shared_folder
 
 
-Verify the permissions:
+Verify the permissions.
 
 getfacl /opt/shared_folder
 
 
-The default ACL helps ensure that newly created content inherits the intended permissions, subject to normal file-creation rules.
+The default ACL helps new files and directories inherit the intended permissions, subject to normal ACL masks and file-creation rules.
 
-Screenshot:
+![Folder ACL permissions](Image/05-folder-acl-permissions.png)
 
-!Folder ACL permissions
+6. Samba Configuration
 
-6. Configure Samba Shares
-
-Edit the Samba configuration file:
+Edit the Samba configuration file.
 
 vi /etc/samba/smb.conf
 
 
-Example share configuration:
+Add the following share definition.
 
 [shared_folder]
     path = /opt/shared_folder
@@ -121,20 +105,18 @@ Example share configuration:
     valid users = user1
 
 
-Save the file and validate the configuration:
+Save the file and validate the configuration.
 
 testparm
 
 
-The share name in this example is shared_folder. Use the same name when connecting from Windows.
+The share name is shared_folder. Use the same name when connecting from Windows.
 
-Screenshot:
+![Samba configuration](Image/06-samba-configuration.png)
 
-!Samba configuration
+7. Samba Service Status
 
-7. Start and Validate Samba
-
-Enable Samba at boot and start the service:
+Enable Samba at boot, start the service, and verify its status.
 
 systemctl enable --now smb
 systemctl restart smb
@@ -143,26 +125,22 @@ systemctl status smb
 
 Confirm that the service is active.
 
-Screenshot:
+![Samba service status](Image/07-samba-service-status.png)
 
-!Samba service status
+8. Samba Share Verification
 
-8. Verify Samba Shares
-
-List the available Samba shares from the Linux server:
+List the available Samba shares from the Linux server.
 
 smbclient -L localhost -U user1
 
 
-Enter the Samba password when prompted. Confirm that shared_folder appears in the results.
+Enter the Samba password when prompted. Verify that shared_folder appears in the output.
 
-Screenshot:
+![Samba share verification](Image/08-samba-share-verification.png)
 
-!Samba share verification
+9. Windows Network Share
 
-9. Access Samba from Windows
-
-Obtain the Linux server's IP address:
+Obtain the Linux server's IP address.
 
 hostname -I
 
@@ -170,54 +148,65 @@ hostname -I
 On the Windows client:
 
 Open File Explorer.
-Enter the following path in the address bar, replacing SERVER-IP with the Linux server's IP address:
+Enter the following path in the address bar, replacing SERVER-IP with your Linux server's IP address.
 
 \\SERVER-IP\shared_folder
 
 Enter the Samba username and password when prompted.
 Confirm that the shared directory opens successfully.
 
-Screenshot:
+![Windows network share](Image/09-windows-network-share.png)
 
-!Windows network share
+10. Windows File Access Test
 
-10. Test File Access
-
-Create a test file from Windows in the shared directory. Then verify that it appears on Linux:
+Create a test file from Windows inside the shared directory. Then verify that it appears on the Linux server.
 
 ls -l /opt/shared_folder
 
 
-This validates file sharing between the Windows client and the Linux server. Confirm write access using an actual test before reporting the result.
+Confirm that the file is listed and that the intended read/write access works.
 
-Screenshot:
-
-!Windows file access test
+![Windows file access test](Image/10-windows-file-access-test.png)
 
 Troubleshooting
-Samba service status
+Check Samba service status
 systemctl status smb
 
-Samba configuration validation
+Validate Samba configuration
 testparm
 
-Share listing
+List available Samba shares
 smbclient -L localhost -U user1
 
-ACL permissions
+Check ACL permissions
 getfacl /opt/shared_folder
 
-SELinux context
+Check SELinux context
 ls -Zd /opt/shared_folder
 
-Firewall
+Configure the firewall
 
-If firewalld is active, allow Samba traffic:
+If firewalld is active, allow Samba traffic.
 
 firewall-cmd --permanent --add-service=samba
 firewall-cmd --reload
 
 
-This hands on project demonstrates Linux-to-Windows file sharing using Samba, with access control managed through Linux ACLs and SELinux.
+If access fails, check Linux directory permissions, ACLs, SELinux contexts, Samba credentials, firewall rules, and network connectivity.
 
-The repository includes configuration steps, validation commands, and screenshots documenting the implementation.
+Key Learning Outcomes
+Installing and configuring Samba on Linux.
+Managing Linux users and Samba authentication.
+Configuring ACL permissions for shared directories.
+Applying SELinux security contexts.
+Validating Samba configuration and services.
+Accessing Linux shares from Windows.
+Testing cross-platform file access.
+Troubleshooting common file-sharing issues.
+
+
+Conclusion
+
+This hands-on project demonstrates Linux-to-Windows file sharing using Samba, with access control managed through Linux ACLs and SELinux.
+
+The repository includes practical configuration commands, validation steps, troubleshooting guidance, and screenshots documenting the implementation.
