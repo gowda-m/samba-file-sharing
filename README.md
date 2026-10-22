@@ -139,21 +139,13 @@ Enter the Samba password when prompted. Verify that shared_folder appears in the
 ![Samba share verification](Image/08-samba-share-verification.png)
 
 9. Windows Network Share
-
-Obtain the Linux server's IP address.
-
-hostname -I
-
-
-On the Windows client:
-
 Open File Explorer.
 Enter the following path in the address bar, replacing SERVER-IP with your Linux server's IP address.
 
 \\SERVER-IP\shared_folder
 
-Enter the Samba username and password when prompted.
-Confirm that the shared directory opens successfully.
+Enter the Samba username and password when prompted
+Confirm that the shared directory opens successfully
 
 ![Windows network share](Image/09-windows-network-share.png)
 
@@ -188,9 +180,11 @@ Configure the firewall
 
 If firewalld is active, allow Samba traffic.
 
+,,,
 firewall-cmd --permanent --add-service=samba
 firewall-cmd --reload
 
+,,,
 
 If access fails, check Linux directory permissions, ACLs, SELinux contexts, Samba credentials, firewall rules, and network connectivity.
 
@@ -204,9 +198,10 @@ Accessing Linux shares from Windows.
 Testing cross-platform file access.
 Troubleshooting common file-sharing issues.
 
-
+---
 Conclusion
 
 This hands-on project demonstrates Linux-to-Windows file sharing using Samba, with access control managed through Linux ACLs and SELinux.
 
 The repository includes practical configuration commands, validation steps, troubleshooting guidance, and screenshots documenting the implementation.
+--
