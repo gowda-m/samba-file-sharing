@@ -1,10 +1,11 @@
-Samba File Sharing Between Linux and Windows
-Project Overview
-
+***Samba File Sharing Between Linux and Windows***
+task Overview
+---
 This project demonstrates how to configure Samba file sharing on a Linux server and access shared directories from a Windows client. It covers Samba installation, user authentication, ACL permissions, SELinux security contexts, share configuration, and file-access validation.
+---
 
 Technologies Used
-Linux Server (RHEL-based distribution)
+Linux Server (RHEL based distribution)
 Samba
 Windows Client
 Access Control Lists (ACL)
@@ -16,18 +17,22 @@ Network file sharing
 
 Install the Samba server and client packages.
 
+```
 dnf install samba samba-client samba-common -y
+```
 ![Samba installation](Image/01-samba-installation.png)
 
 2. Linux User Creation
 
 Create a dedicated Linux user for Samba access.
 
+
+```
 useradd -s /sbin/nologin user1
 passwd user1
 smbpasswd -a user1
 smbpasswd -e user1
-
+```
 useradd creates the Linux account.
 passwd sets the Linux account password.
 smbpasswd -a adds the user to the Samba password database.
@@ -39,28 +44,29 @@ smbpasswd -e enables the Samba account.
 
 Install ACL utilities to manage file and directory permissions.
 
+```
 dnf install acl -y
-
-
+```
 ![ACL package installation](Image/03-acl-package-installation.png)
 
 4. SELinux Context Configuration
 
 Install the SELinux management utilities.
 
+```
 dnf install policycoreutils-python-utils -y
-
+```
 
 Add the SELinux file context rule and apply it to the shared directory.
-
+```
 semanage fcontext -a -t samba_share_t "/opt/shared_folder(/.*)?"
 restorecon -Rv /opt/shared_folder
-
+```
 
 Verify the SELinux context.
-
+```
 ls -Zd /opt/shared_folder
-
+```
 
 The directory should have the samba_share_t SELinux type.
 
@@ -69,32 +75,35 @@ The directory should have the samba_share_t SELinux type.
 5. Folder ACL Permissions
 
 Create the shared directory if it does not already exist.
-
+```
 mkdir -p /opt/shared_folder
-
+```
 
 Grant user1 read, write, and directory traversal permissions.
 
+```
 setfacl -m u:user1:rwx /opt/shared_folder
 setfacl -R -m u:user1:rwX /opt/shared_folder
 setfacl -m d:u:user1:rwX /opt/shared_folder
-
-
-Verify the permissions.
-
-getfacl /opt/shared_folder
-
+```
 
 The default ACL helps new files and directories inherit the intended permissions, subject to normal ACL masks and file-creation rules.
 
 ![Folder ACL permissions](Image/05-folder-acl-permissions.png)
 
+Verify the permissions.
+
+```
+getfacl /opt/shared_folder
+```
+
 6. Samba Configuration
 
 Edit the Samba configuration file.
 
+```
 vi /etc/samba/smb.conf
-
+```
 
 Add the following share definition.
 
@@ -107,8 +116,9 @@ Add the following share definition.
 
 Save the file and validate the configuration.
 
+```
 testparm
-
+```
 
 The share name is shared_folder. Use the same name when connecting from Windows.
 
@@ -118,10 +128,11 @@ The share name is shared_folder. Use the same name when connecting from Windows.
 
 Enable Samba at boot, start the service, and verify its status.
 
+```
 systemctl enable --now smb
 systemctl restart smb
 systemctl status smb
-
+```
 
 Confirm that the service is active.
 
@@ -131,8 +142,9 @@ Confirm that the service is active.
 
 List the available Samba shares from the Linux server.
 
+```
 smbclient -L localhost -U user1
-
+```
 
 Enter the Samba password when prompted. Verify that shared_folder appears in the output.
 
@@ -153,8 +165,9 @@ Confirm that the shared directory opens successfully
 
 Create a test file from Windows inside the shared directory. Then verify that it appears on the Linux server.
 
+```
 ls -l /opt/shared_folder
-
+```
 
 Confirm that the file is listed and that the intended read/write access works.
 
@@ -162,29 +175,38 @@ Confirm that the file is listed and that the intended read/write access works.
 
 Troubleshooting
 Check Samba service status
+
+```
 systemctl status smb
-
+```
 Validate Samba configuration
-testparm
 
+```
+testparm
+```
 List available Samba shares
+```
 smbclient -L localhost -U user1
 
+```
 Check ACL permissions
+```
 getfacl /opt/shared_folder
+```
 
 Check SELinux context
+```
 ls -Zd /opt/shared_folder
+```
 
 Configure the firewall
 
 If firewalld is active, allow Samba traffic.
 
-,,,
+```
 firewall-cmd --permanent --add-service=samba
 firewall-cmd --reload
-
-,,,
+```
 
 If access fails, check Linux directory permissions, ACLs, SELinux contexts, Samba credentials, firewall rules, and network connectivity.
 
