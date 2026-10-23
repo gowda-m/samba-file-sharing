@@ -154,9 +154,7 @@ Enter the Samba password when prompted. Verify that shared_folder appears in the
 Open File Explorer.
 Enter the following path in the address bar, replacing SERVER-IP with your Linux server's IP address.
 
-  ---
   \\SERVER-IP\shared_folder
-  ---
 
 Enter the Samba username and password when prompted
 Confirm that the shared directory opens successfully
@@ -225,7 +223,7 @@ Troubleshooting common file-sharing issues.
 ---
 Conclusion
 
-This hands-on project demonstrates Linux-to-Windows file sharing using Samba, with access control managed through Linux ACLs and SELinux.
+This hands on project demonstrates Linux-to-Windows file sharing using Samba, with access control managed through Linux ACLs and SELinux.
 
 The repository includes practical configuration commands, validation steps, troubleshooting guidance, and screenshots documenting the implementation.
 --
