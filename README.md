@@ -154,7 +154,9 @@ Enter the Samba password when prompted. Verify that shared_folder appears in the
 Open File Explorer.
 Enter the following path in the address bar, replacing SERVER-IP with your Linux server's IP address.
 
-\\SERVER-IP\shared_folder
+  ---
+  \\SERVER-IP\shared_folder
+  ---
 
 Enter the Samba username and password when prompted
 Confirm that the shared directory opens successfully
