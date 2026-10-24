@@ -87,7 +87,7 @@ setfacl -R -m u:user1:rwX /opt/shared_folder
 setfacl -m d:u:user1:rwX /opt/shared_folder
 ```
 
-The default ACL helps new files and directories inherit the intended permissions, subject to normal ACL masks and file-creation rules.
+The default ACL helps new files and directories inherit the intended permissions, subject to normal ACL masks and file creation rules.
 
 ![Folder ACL permissions](Image/05-folder-acl-permissions.png)
 
