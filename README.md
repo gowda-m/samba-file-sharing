@@ -1,10 +1,10 @@
 ***Samba File Sharing Between Linux and Windows***
-task Overview
----
-This project demonstrates how to configure Samba file sharing on a Linux server and access shared directories from a Windows client. It covers Samba installation, user authentication, ACL permissions, SELinux security contexts, share configuration, and file-access validation.
----
 
-Technologies Used
+task Overview
+
+**This project demonstrates how to configure Samba file sharing on a Linux server and access shared directories from a Windows client. It covers Samba installation, user authentication, ACL permissions, SELinux security contexts, share configuration, and file-access validation**
+
+**Technologies Used**
 Linux Server (RHEL based distribution)
 Samba
 Windows Client
